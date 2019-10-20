@@ -3,13 +3,9 @@ import VK
 
 body = """
 <body>
-    <p style="text-align:center">Пользователь 1:<input id="user1" required="required" size="30" type="url" /></p>
-    
-    <p style="text-align:center">Пользователь 2:<input id="user2" required="required" size="30" type="url" /></p>
-    
-    <p style="text-align:center"><input data-xdh-onevent="compute" name="compute" type="button" value="Найти путь" /></p>
-    
-    <p style="text-align:center"></p>
+    <p style="text-align:center">Пользователь 1:<input id="user1" size="30" type="url" /></p>  
+    <p style="text-align:center">Пользователь 2:<input id="user2" size="30" type="url" /></p>  
+    <p style="text-align:center"><input data-xdh-onevent="compute" type="button" value="Найти путь" /></p>
 </body>
 """
 
@@ -40,8 +36,21 @@ def ac_connect(dom, id):
 
 
 def compute(dom, id):
-    user1 = dom.getContent('user1')
-    user2 = dom.getContent('user2')
+
+    try:
+        user1 = VK.get_user_id(dom.getContent('user1'))
+        user2 = VK.get_user_id(dom.getContent('user2'))
+    except RuntimeError as err:
+        dom.alert(str(err))
+        return
+
+    if not VK.get_friend_ids_list(user1):
+        dom.alert("{} don't have any friends :(".format(VK.get_user_fullname(user1)))
+        return
+    if not VK.get_friend_ids_list(user2):
+        dom.alert("{} don't have any friends :(".format(VK.get_user_fullname(user2)))
+        return
+
     dom.setLayout("", compute_body)
     try:
         path = VK.get_friends_path(user1, user2)
